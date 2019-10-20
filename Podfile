@@ -6,7 +6,7 @@ target 'The Movie DB Client' do
   use_frameworks!
 
   # Pods for The Movie DB Client
-
+  
   target 'The Movie DB Client Tests' do
     inherit! :search_paths
     # Pods for testing
