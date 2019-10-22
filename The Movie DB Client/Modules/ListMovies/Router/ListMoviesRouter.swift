@@ -6,20 +6,22 @@
 //Copyright © 2019 Fernando Luna. All rights reserved.
 //
 
-import Foundation
 import Viperit
 
 // MARK: - ListMoviesRouter class
-final class ListMoviesRouter: Router {
+final class ListMoviesRouter: Router  {
 }
 
 // MARK: - ListMoviesRouter API
 extension ListMoviesRouter: ListMoviesRouterApi {
+    
 }
 
 // MARK: - ListMovies Viper Components
 private extension ListMoviesRouter {
+    
     var presenter: ListMoviesPresenterApi {
         return _presenter as! ListMoviesPresenterApi
     }
+    
 }

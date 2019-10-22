@@ -8,3 +8,8 @@
 # List file paths below; one per line. These paths will be considered inputs or outputs for the script phase.
 # Build settings will be expanded, e.g. $(SRCROOT)/fileName
 $(SRCROOT)/Carthage/Build/iOS/Viperit.framework
+$(SRCROOT)/Carthage/Build/iOS/RxSwift.framework
+$(SRCROOT)/Carthage/Build/iOS/RxCocoa.framework
+$(SRCROOT)/Carthage/Build/iOS/RxRelay.framework
+$(SRCROOT)/Carthage/Build/iOS/Kingfisher.framework
+$(SRCROOT)/Carthage/Build/iOS/ESPullToRefresh.framework

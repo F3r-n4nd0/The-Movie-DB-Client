@@ -11,5 +11,5 @@ import Viperit
 
 // MARK: - ListMoviesDisplayData class
 final class ListMoviesDisplayData: DisplayData {
-    
+    let messageErrorUpdatedMovie = "Error showing movies."
 }

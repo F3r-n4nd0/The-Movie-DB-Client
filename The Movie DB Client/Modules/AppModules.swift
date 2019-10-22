@@ -11,9 +11,11 @@ import Viperit
 
 enum AppModules: String, ViperitModule {
     case ListMovies
+    case Home
     var viewType: ViperitViewType {
         switch self {
         case .ListMovies: return .storyboard
+        case .Home: return .code
         }
     }
 }

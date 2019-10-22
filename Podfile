@@ -6,6 +6,8 @@ target 'The Movie DB Client' do
   use_frameworks!
 
   # Pods for The Movie DB Client
+  pod 'R.swift'
+  pod 'AMScrollingNavbar'
   
   target 'The Movie DB Client Tests' do
     inherit! :search_paths
