@@ -37,9 +37,9 @@ public struct MovieListObject: Codable {
     
     public var video: Bool?
     
-    public var voteAverage: Decimal?
+    public var voteAverage: Float?
     
-    public init(posterPath: String?, adult: Bool?, overview: String?, releaseDate: String?, genreIds: [Int]?, _id: Int?, originalTitle: String?, originalLanguage: String?, title: String?, backdropPath: String?, popularity: Decimal?, voteCount: Int?, video: Bool?, voteAverage: Decimal?) {
+    public init(posterPath: String?, adult: Bool?, overview: String?, releaseDate: String?, genreIds: [Int]?, _id: Int?, originalTitle: String?, originalLanguage: String?, title: String?, backdropPath: String?, popularity: Decimal?, voteCount: Int?, video: Bool?, voteAverage: Float?) {
         self.posterPath = posterPath
         self.adult = adult
         self.overview = overview
