@@ -13,38 +13,51 @@ import RxSwift
 // MARK: - ListMoviesPresenter Class
 final class ListMoviesPresenter: Presenter {
     
-    private let observableMovies = PublishSubject<[Movie]>()
+    private let _publishUpdatedMovies = PublishSubject<[Movie]>()
     private let disposeBag = DisposeBag()
     
-    override func viewHasAppeared() {
-        super.viewHasAppeared()
-        loadPopularMovies()
+    private var page: Int = 1
+    private var type: ListMoviesType = .Popular
+    
+    private func notifyMoviesLoaded(pageMovies: PageMovies) {
+        let movies = pageMovies.movies
+        page = pageMovies.number
+        _publishUpdatedMovies.onNext(movies)
     }
     
-    private func updatedMovies(movies: [Movie]) {
-        observableMovies.onNext(movies)
+    private func processLoadMovies(page: Int, type: ListMoviesType) {
+        interactor.requestMovies(page: page, type: type)
+            .subscribe(
+                onNext: { [unowned self]  pageMovies in
+                    self.notifyMoviesLoaded(pageMovies: pageMovies)
+                },
+                onError: { [unowned self] error in
+                    self._publishUpdatedMovies.onError(error)
+                },
+                onCompleted: {
+                    self._publishUpdatedMovies.onCompleted()
+            }
+        ).disposed(by: disposeBag)
     }
     
-    private func loadPopularMovies() {
-        interactor.getPopularMovies().subscribe(
-            onNext: { [unowned self]  movies in
-                self.updatedMovies(movies: movies) },
-            onError: { [unowned self] error in
-                self.observableMovies.onError(error)
-        }).disposed(by: disposeBag)
-    }
-
 }
 
 // MARK: - ListMoviesPresenter API
 extension ListMoviesPresenter: ListMoviesPresenterApi {
     
     var publishUpdatedMovies: Observable<[Movie]> {
-        return observableMovies
+        return _publishUpdatedMovies
     }
     
-    func showPopularMovies() {
-        self.loadPopularMovies()
+    func loadPopularMovies() {
+        page = 1
+        type = .Popular
+        processLoadMovies(page: page, type: type)
+    }
+    
+    func loadNextPage() {
+        let nextPage = page + 1
+        processLoadMovies(page: nextPage, type: type)
     }
     
 }

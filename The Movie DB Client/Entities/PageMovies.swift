@@ -1,5 +1,5 @@
 //
-//  Page.swift
+//  PageMovies.swift
 //  The Movie DB Client
 //
 //  Created by Fernando Luna on 10/23/19.
@@ -8,9 +8,8 @@
 
 import Foundation
 
-struct PageMovies {
+struct PageMovies: Equatable {
 
-    public var _id: String
     public var number: Int
     public var type: ListMoviesType
     public var source: ListMoviesSourceData

@@ -1,5 +1,5 @@
 //
-//  ListMoviesConnecitonSourceData.swift
+//  ListMoviesSourceData.swift
 //  The Movie DB Client
 //
 //  Created by Fernando Luna on 10/23/19.
@@ -8,7 +8,7 @@
 
 import Foundation
 
-enum ListMoviesConnecitonSourceData {
+enum ListMoviesSourceData {
     case api
     case cache
 }

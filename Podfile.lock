@@ -1,24 +1,20 @@
 PODS:
-  - AMScrollingNavbar (5.4.0)
-  - R.swift (5.0.3):
-    - R.swift.Library (~> 5.0.0)
-  - R.swift.Library (5.0.1)
+  - R.swift (5.1.0):
+    - R.swift.Library (~> 5.1.0)
+  - R.swift.Library (5.1.0)
 
 DEPENDENCIES:
-  - AMScrollingNavbar
   - R.swift
 
 SPEC REPOS:
   trunk:
-    - AMScrollingNavbar
     - R.swift
     - R.swift.Library
 
 SPEC CHECKSUMS:
-  AMScrollingNavbar: 5fcd5b20cec965115b36e350509e0dbd84f9679b
-  R.swift: f5a87643b91ea569d23d6afb3eee9c743edde239
-  R.swift.Library: cfe85d569d9bae6cb262922db130e7c3a7a5fad1
+  R.swift: 8cbc4fc69b740305b6a17c8a8ed968eb788962d9
+  R.swift.Library: fa85ce1e0d0b7e818cd9e080df910ba54d2776cc
 
-PODFILE CHECKSUM: c4f69b449a862948567ddbe75e18b27c48b2a1bb
+PODFILE CHECKSUM: 5d1ed18f311eec97c300e2a06c7c444c8262f48c
 
 COCOAPODS: 1.8.4

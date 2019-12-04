@@ -25,6 +25,7 @@ class ServiceLayer {
         guard let url = components.url else { return nil }
         var urlRequest = URLRequest(url: url)
         urlRequest.httpMethod = router.method
+        URLSession.shared.rx.json(request: urlRequest).take(1)
         let dataTask = session.dataTask(with: urlRequest) { data, response, error in
             guard error == nil else {
                 completion(.failure(error!))

@@ -31,7 +31,7 @@
                                 <color key="barTintColor" name="SecondaryColor"/>
                                 <color key="selectedImageTintColor" name="PrimaryColor"/>
                             </tabBar>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="150" estimatedRowHeight="150" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="d54-2J-rC6">
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="150" estimatedRowHeight="150" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="d54-2J-rC6">
                                 <rect key="frame" x="0.0" y="88" width="414" height="725"/>
                                 <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </tableView>
@@ -47,9 +47,15 @@
                             <constraint firstItem="rPb-mv-Fd4" firstAttribute="leading" secondItem="kgt-o0-aP8" secondAttribute="leading" id="thm-at-W2c"/>
                         </constraints>
                     </view>
-                    <navigationItem key="navigationItem" id="DIk-eC-UsE"/>
+                    <navigationItem key="navigationItem" id="DIk-eC-UsE">
+                        <rightBarButtonItems>
+                            <barButtonItem title="Item" image="cloudOn" id="WcH-8w-XaR"/>
+                            <barButtonItem image="refresh" id="mTt-pP-IfN"/>
+                        </rightBarButtonItems>
+                    </navigationItem>
                     <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" prompted="NO"/>
                     <connections>
+                        <outlet property="barButtonConnectionStatus" destination="WcH-8w-XaR" id="LiH-GR-1uU"/>
                         <outlet property="tabBar" destination="rPb-mv-Fd4" id="dbF-Zc-FrE"/>
                         <outlet property="tableView" destination="d54-2J-rC6" id="7Rz-Yb-aT7"/>
                     </connections>
@@ -60,7 +66,9 @@
         </scene>
     </scenes>
     <resources>
+        <image name="cloudOn" width="21.5" height="21.5"/>
         <image name="popular" width="21.5" height="21.5"/>
+        <image name="refresh" width="21.5" height="21.5"/>
         <image name="topRated" width="21.5" height="21.5"/>
         <image name="upcoming" width="21.5" height="21.5"/>
         <namedColor name="PrimaryColor">

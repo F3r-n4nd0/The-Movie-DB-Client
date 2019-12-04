@@ -13,20 +13,25 @@ import RxSwift
 
 class ListMoviesInteractorTests: XCTestCase {
     
-    var listMoviesInteractor: ListMoviesInteractor!
-    var disposeBag: DisposeBag!
+    var mockDataPage = PageMovies(number: 1,
+                                  type: .Popular,
+                                  source: .api,
+                                  movies:
+        [
+            Movie(_id: 475557,
+                  posterPath: MovieListObject.decodePosterPath(path: "/udDclJoHjfjb8Ekgsd4FDteOkCU.jpg"),
+                  overview: "During the 1980s, a failed stand-up comedian is driven insane and turns to a life of crime and chaos in Gotham City while becoming an infamous psychopathic crime figure.",
+                  releaseDate: MovieListObject.decodeReleaseDate(date: "1970-01-01"),
+                  originalTitle: "Joker",
+                  originalLanguage: "en",
+                  title: "Joker",
+                  voteCount: 3577,
+                  voteAverage: 8.6)
+        ]
+    )
     
-    var mockData = [
-        Movie(_id: 475557,
-              posterPath: MovieListObject.decodePosterPath(path: "/udDclJoHjfjb8Ekgsd4FDteOkCU.jpg"),
-              overview: "During the 1980s, a failed stand-up comedian is driven insane and turns to a life of crime and chaos in Gotham City while becoming an infamous psychopathic crime figure.",
-              releaseDate: MovieListObject.decodeReleaseDate(date: "1970-01-01"),
-              originalTitle: "Joker",
-              originalLanguage: "en",
-              title: "Joker",
-              voteCount: 3577,
-              voteAverage: 8.6)
-    ]
+    private var listMoviesInteractor: ListMoviesInteractor!
+    private var disposeBag: DisposeBag!
     
     override func setUp() {
         listMoviesInteractor = ListMoviesInteractor()
@@ -38,24 +43,81 @@ class ListMoviesInteractorTests: XCTestCase {
         listMoviesInteractor = nil
     }
     
-    
-    func testGetPopularMovies_fromAPI_notificateMoviesToThePresenter() {
-        let expectation = XCTestExpectation(description: "presenter get update notification from the interactor")
-        var responseError: Error?
-        var responseData: [Movie]?
-        listMoviesInteractor.listMovieAPiClient = MockListMoviesAPIClient(response: mockData, error: nil)
-        listMoviesInteractor.getPopularMovies().subscribe(onNext: { movies in
-            responseData = movies
-            expectation.fulfill()
-        }, onError: { (error) in
-            responseError = error
-            expectation.fulfill()
-        }).disposed(by: disposeBag)
+    func testGetPopularMovies_fromAPI_notifyMoviesToThePresenter() {
+        listMoviesInteractor.listMovieAPiClient = MockListMoviesAPIClient(response: mockDataPage, error: nil)
+        let mockRepository = MockListMoviesRepository(pagesMovies: [mockDataPage])
+        listMoviesInteractor.listMovieRepository = mockRepository
+        
+        var responseError: [Error] = []
+        var responseData: [PageMovies] = []
+        let expectation = XCTestExpectation(description: "process get data")
+        listMoviesInteractor.requestMovies(page: 1, type: .Popular)
+            .subscribe(onNext: { pageMovies in
+                responseData.append(pageMovies)
+            }, onError: { error in
+                responseError.append(error)
+            }, onCompleted: {
+                expectation.fulfill()
+            }
+        ).disposed(by: disposeBag)
         wait(for: [expectation], timeout: 1)
         
-        XCTAssertNil(responseError)
-        XCTAssertNotNil(responseData)
-        XCTAssertEqual(mockData, responseData)
+        XCTAssertEqual(responseError.count, 0)
+        XCTAssertEqual(responseData.count, 2)
+        XCTAssertEqual(responseData, [mockDataPage, mockDataPage])
+    }
+    
+    func testGetPopularMovies_whenFailToRequest_notifyError() {
+        let mockAPIClient = MockListMoviesAPIClient(response: nil,
+                                                    error: ListMoviesError.internetConnectionProblem)
+        listMoviesInteractor.listMovieAPiClient = mockAPIClient
+        let mockRepository = MockListMoviesRepository(pagesMovies: [mockDataPage])
+        listMoviesInteractor.listMovieRepository = mockRepository
+        
+        var responseError: [Error] = []
+        var responseData: [PageMovies] = []
+        let expectation = XCTestExpectation(description: "process get data")
+        listMoviesInteractor.requestMovies(page: 1, type: .Popular)
+            .subscribe(
+                onNext: { pageMovies in
+                    responseData.append(pageMovies)
+            }, onError: { error in
+                responseError.append(error)
+                expectation.fulfill()
+            }, onCompleted: {
+                expectation.fulfill()
+            }
+        ).disposed(by: disposeBag)
+        wait(for: [expectation], timeout: 1)
+        
+        XCTAssertEqual(responseError.count, 1)
+        XCTAssertEqual(responseData.count, 1)
+        XCTAssertEqual(responseData, [mockDataPage])
+    }
+    
+    func testGetPopularMovies_whenSetPage_notifyMovies() {
+        let mockAPIClient = MockListMoviesAPIClient(response: mockDataPage, error: nil)
+        listMoviesInteractor.listMovieAPiClient = mockAPIClient
+        let mockRepository = MockListMoviesRepository(pagesMovies: [])
+        listMoviesInteractor.listMovieRepository = mockRepository
+        
+        var responseError: [Error] = []
+        var responseData: [PageMovies] = []
+        let expectation = XCTestExpectation(description: "process get data")
+        listMoviesInteractor.requestMovies(page: 1, type: .Popular)
+            .subscribe(onNext: { pageMovies in
+                responseData.append(pageMovies)
+            }, onError: { error in
+                responseError.append(error)
+            }, onCompleted: {
+                expectation.fulfill()
+            }
+        ).disposed(by: disposeBag)
+        wait(for: [expectation], timeout: 1)
+        
+        XCTAssertEqual(responseError.count, 0)
+        XCTAssertEqual(responseData.count, 1)
+        XCTAssertEqual(responseData, [mockDataPage])
     }
     
     func testPerformanceExample() {

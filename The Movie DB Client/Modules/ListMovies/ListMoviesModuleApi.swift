@@ -21,14 +21,24 @@ protocol ListMoviesViewApi: UserInterfaceProtocol {
 //MARK: - ListMoviesPresenter API
 protocol ListMoviesPresenterApi: PresenterProtocol {
     var publishUpdatedMovies: Observable<[Movie]> { get }
-    func showPopularMovies() -> Void
+    func loadPopularMovies() -> Void
+    func loadNextPage() -> Void
 }
 
 //MARK: - ListMoviesInteractor API
 protocol ListMoviesInteractorApi: InteractorProtocol {
-    func getPopularMovies() -> Observable<[Movie]>
+    func requestMovies(page: Int, type: ListMoviesType) -> Observable<PageMovies>
 }
 
 protocol ListMoviesAPIClientApi {
-    func requestListPopularMovies(page: Int, reponse: @escaping (Result<[Movie],Error>) -> Void ) -> URLSessionDataTask?
+    func requestPageMovies(
+        page: Int,
+        type: ListMoviesType,
+        handler: @escaping (Result<PageMovies,Error>) -> Void
+    ) -> URLSessionDataTask?
+}
+
+protocol ListMoviesRepositoryApi  {
+    func storePageMovies(pageMovies: PageMovies) -> Void
+    func getPageMovies(page: Int, type: ListMoviesType) -> PageMovies?
 }

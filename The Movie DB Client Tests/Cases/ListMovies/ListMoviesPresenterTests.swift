@@ -13,70 +13,106 @@ import RxSwift
 
 class ListMoviesPresenterTests: XCTestCase {
     
-    var listMoviesPresenter: ListMoviesPresenterApi!
-    var mockListMoviesInteractor: MockListMoviesInteractor!
-    var disposeBag: DisposeBag!
+    var mockDataPage = PageMovies(number: 1,
+                                  type: .Popular,
+                                  source: .api,
+                                  movies:
+        [
+            Movie(_id: 475557,
+                  posterPath: MovieListObject.decodePosterPath(path: "/udDclJoHjfjb8Ekgsd4FDteOkCU.jpg"),
+                  overview: "During the 1980s, a failed stand-up comedian is driven insane and turns to a life of crime and chaos in Gotham City while becoming an infamous psychopathic crime figure.",
+                  releaseDate: MovieListObject.decodeReleaseDate(date: "1970-01-01"),
+                  originalTitle: "Joker",
+                  originalLanguage: "en",
+                  title: "Joker",
+                  voteCount: 3577,
+                  voteAverage: 8.6)
+        ]
+    )
     
-     var mockData = [
-
-        Movie(_id: 0, posterPath: URL(string: "http://www.google.com")!, overview: "detail", releaseDate: Date(), originalTitle: "Original Title", originalLanguage: "es", title: "Title", voteCount: 0, voteAverage: 0)
-    ]
+    var listMoviesPresenter: ListMoviesPresenter!
+    var disposeBag: DisposeBag!
     
     override func setUp() {
         listMoviesPresenter = ListMoviesPresenter()
-        mockListMoviesInteractor = MockListMoviesInteractor()
         disposeBag = DisposeBag()
-        listMoviesPresenter._interactor = mockListMoviesInteractor
     }
     
     override func tearDown() {
-        listMoviesPresenter._interactor = nil
         disposeBag = nil
         listMoviesPresenter = nil
-        mockListMoviesInteractor = nil
     }
     
-    func testGetPopularMovies_whenSuccess_notificateUpdatedToView() {
-        let expectation = XCTestExpectation(description: "view get update notification from the presenter")
-        var responseError: Error?
-        var responseData: [Movie]?
-        mockListMoviesInteractor.dataMovies = mockData
-        mockListMoviesInteractor.error = nil
+    func testGetPopularMovies_whenSuccess_notifyUpdatedToView() {
+        let mockInteractor = MockListMoviesInteractor(data: mockDataPage, error: nil)
+        listMoviesPresenter._interactor = mockInteractor
+        
+        var responseError: [Error] = []
+        var responseData: [[Movie]] = []
+        let expectation = XCTestExpectation(description: "process load movies")
         listMoviesPresenter.publishUpdatedMovies
             .subscribe(onNext: { movies in
-                responseData = movies
+                responseData.append(movies)
                 expectation.fulfill()
-            }, onError: { (error) in
-                responseError = error
+            }, onError: { error in
+                responseError.append(error)
                 expectation.fulfill()
-            }).disposed(by: disposeBag)
-        listMoviesPresenter.showPopularMovies()
-        wait(for: [expectation], timeout: 1.0)
+            }
+        ).disposed(by: disposeBag)
+        listMoviesPresenter.loadPopularMovies()
+        wait(for: [expectation], timeout: 1)
         
-        XCTAssertNil(responseError)
-        XCTAssertNotNil(responseData)
-        XCTAssertEqual(mockData, responseData!)
+        XCTAssertEqual(responseError.count, 0)
+        XCTAssertEqual(responseData.count, 1)
+        XCTAssertEqual(responseData, [mockDataPage.movies])
     }
     
-    func testGetPopularMovies_whenThrowError_notificateErrorToView() {
-        let expectation = XCTestExpectation(description: "view get error notification from the presenter")
-        var responseError: Error?
-        var responseData: [Movie]?
-        mockListMoviesInteractor.dataMovies = nil
-        mockListMoviesInteractor.error = .internetConnectionProblem
+    func testGetPopularMovies_whenThrowError_notifyErrorToView() {
+        let mockInteractor = MockListMoviesInteractor(data: nil, error: .internetConnectionProblem)
+        listMoviesPresenter._interactor = mockInteractor
+        
+        var responseError: [Error] = []
+        var responseData: [[Movie]] = []
+        let expectation = XCTestExpectation(description: "process load movies")
         listMoviesPresenter.publishUpdatedMovies
-            .subscribe(onNext: { (movies) in
-                responseData = movies
+            .subscribe(onNext: { movies in
+                responseData.append(movies)
                 expectation.fulfill()
-            }, onError: { (error) in
-                responseError = error
+            }, onError: { error in
+                responseError.append(error)
                 expectation.fulfill()
-            }).disposed(by: disposeBag)
-        listMoviesPresenter.showPopularMovies()
+            }
+        ).disposed(by: disposeBag)
+        listMoviesPresenter.loadPopularMovies()
         wait(for: [expectation], timeout: 1.0)
         
-        XCTAssertNil(responseData)
-        XCTAssertNotNil(responseError)
+        XCTAssertEqual(responseError.count, 1)
+        XCTAssertEqual(responseData.count, 0)
+    }
+    
+    func testGetMovies_whenGetNextPage_sendNotifyView() {
+        let mockInteractor = MockListMoviesInteractor(data: nil, error: ListMoviesError.internetConnectionProblem)
+        listMoviesPresenter._interactor = mockInteractor
+        
+        var responseError: [Error] = []
+        var responseData: [[Movie]] = []
+        let expectation = XCTestExpectation(description: "process load movies")
+        listMoviesPresenter.publishUpdatedMovies
+            .subscribe(onNext: { movies in
+                responseData.append(movies)
+            }, onError: { error in
+                responseError.append(error)
+            }, onCompleted: {
+                expectation.fulfill()
+            }
+        ).disposed(by: disposeBag)
+        listMoviesPresenter.loadPopularMovies()
+        listMoviesPresenter.loadNextPage()
+        wait(for: [expectation], timeout: 1.0)
+        
+        XCTAssertEqual(responseError.count, 2)
+        XCTAssertEqual(responseData.count, 0)
+        XCTAssertEqual(responseData, [mockDataPage.movies])
     }
     
     func testPerformanceExample() {

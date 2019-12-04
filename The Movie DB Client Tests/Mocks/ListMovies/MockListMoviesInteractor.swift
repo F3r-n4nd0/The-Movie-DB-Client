@@ -13,30 +13,33 @@ import Viperit
 import RxSwift
 
 final class MockListMoviesInteractor: Interactor {
-
+    
     var error: ListMoviesError?
-    var dataMovies: [Movie]?
-
+    var data: PageMovies?
+    
+    init(data: PageMovies?, error: ListMoviesError?) {
+        self.data = data
+        self.error = error
+    }
+    
+    required init() {
+    }
+    
 }
 
 extension MockListMoviesInteractor: ListMoviesInteractorApi {
-
-    var session: URLSession {
-        get {
-            return URLSession.shared
-        }
-    }
-
-    func getPopularMovies() -> Observable<[Movie]> {
-        return Observable<[Movie]>.create { [unowned self] (observer) -> Disposable in
-            if let error = self.error {
-                observer.onError(error)
-            }
-            if let data = self.dataMovies {
-                 observer.onNext(data)
-            }
-            return Disposables.create {}
-        }
-    }
     
+    func requestMovies(page: Int, type: ListMoviesType) -> Observable<PageMovies> {
+        return Observable<PageMovies>
+                   .create { [unowned self] (observer) -> Disposable in
+                       if let error = self.error {
+                           observer.onError(error)
+                       }
+                       if let data = self.data {
+                           observer.onNext(data)
+                       }
+                       return Disposables.create {}
+               }
+    }
+ 
 }

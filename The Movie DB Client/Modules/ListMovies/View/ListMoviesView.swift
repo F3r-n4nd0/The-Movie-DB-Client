@@ -19,26 +19,33 @@ final class ListMoviesView: UserInterface {
     
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var tabBar: UITabBar!
-
+    @IBOutlet weak var barButtonConnectionStatus: UIBarButtonItem!
+    
     private var disposeBagTable = DisposeBag()
     private var disposableTable: Disposable?
+    private var disposableInternetStatus: Disposable?
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        configureNavBar()
         configureTabBar()
+        presenter.loadPopularMovies()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        if let navigationController = navigationController as? ScrollingNavigationController {
-            navigationController.followScrollView(tableView, delay: 50.0)
-        }
         subscribeTableUpdate()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         unsubscribeTableUpdate()
         super.viewWillDisappear(animated)
+    }
+    
+    private func configureNavBar() {
+        if let navigationController = navigationController as? ScrollingNavigationController {
+            navigationController.followScrollView(tableView, delay: 50.0)
+        }
     }
     
     private func configureTabBar() {
@@ -57,10 +64,10 @@ final class ListMoviesView: UserInterface {
                 cellMovie.labelDetail.text = movie.overview
         }
         if let disposableTable = disposableTable {
-             disposeBagTable.insert(disposableTable)
+            disposeBagTable.insert(disposableTable)
         }
         tableView.es.addInfiniteScrolling { [unowned self] in
-            self.presenter.showPopularMovies()
+            self.presenter.loadNextPage()
         }
     }
     

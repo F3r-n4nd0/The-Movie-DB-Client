@@ -12,17 +12,24 @@ import XCTest
 
 class ListMoviesAPIClientTests: XCTestCase {
     
-    var mockData = [
-        Movie(_id: 475557,
-              posterPath: MovieListObject.decodePosterPath(path: "/udDclJoHjfjb8Ekgsd4FDteOkCU.jpg"),
-              overview: "During the 1980s, a failed stand-up comedian is driven insane and turns to a life of crime and chaos in Gotham City while becoming an infamous psychopathic crime figure.",
-              releaseDate: MovieListObject.decodeReleaseDate(date: "1970-01-01"),
-              originalTitle: "Joker",
-              originalLanguage: "en",
-              title: "Joker",
-              voteCount: 3577,
-              voteAverage: 8.6)
-    ]
+    var mockDataPage = PageMovies(number: 1,
+                                   type: .Popular,
+                                   source: .api,
+                                   movies:
+        [
+            Movie(_id: 475557,
+                  posterPath: MovieListObject.decodePosterPath(path: "/udDclJoHjfjb8Ekgsd4FDteOkCU.jpg"),
+                  overview: "During the 1980s, a failed stand-up comedian is driven insane and turns to a life of crime and chaos in Gotham City while becoming an infamous psychopathic crime figure.",
+                  releaseDate: MovieListObject.decodeReleaseDate(date: "1970-01-01"),
+                  originalTitle: "Joker",
+                  originalLanguage: "en",
+                  title: "Joker",
+                  voteCount: 3577,
+                  voteAverage: 8.6)
+        ]
+    )
+    
+    
     
     var mockjsonData = """
     {
@@ -52,40 +59,47 @@ class ListMoviesAPIClientTests: XCTestCase {
             }
           ]
         }
-    """
+    """.data(using: .utf8)
+    
+    
+    private var listMovieAPIClient: ListMoviesAPiClient!
     
     override func setUp() {
+        listMovieAPIClient = ListMoviesAPiClient()
     }
     
     override func tearDown() {
+        listMovieAPIClient = nil
     }
     
     func testConvertAPIResponse_whenJsonResponse_convertToMovies() {
-        let data = mockjsonData.data(using: .utf8)
-        XCTAssertNotNil(data)
-        XCTAssertNoThrow(try JSONDecoder().decode(InlineResponse200.self, from: data!))
+        XCTAssertNotNil(mockjsonData)
+        XCTAssertNoThrow(try JSONDecoder().decode(InlineResponse200.self, from: mockjsonData!))
     }
     
-    func xxxx() {
-        let data = mockjsonData.data(using: .utf8)
-        let urlMockSession = URLSessionMock(data: data, error: nil)
+    func testRequestPopularMovies_whenAPIRequest_returnPageMovies() {
+        let urlMockSession = URLSessionMock(data: mockjsonData, error: nil)
+        let mockServiceLayer = ServiceLayer(session: urlMockSession)
+        listMovieAPIClient.serviceLayer = mockServiceLayer
+
         var responseError: Error?
-        var responseData: [Movie]?
-        let listMovieAPIClient = ListMoviesAPiClient()
-        listMovieAPIClient.serviceLayer = ServiceLayer(session: urlMockSession)
-        
-        let task  = listMovieAPIClient.requestListPopularMovies(page: 1) { result in
+        var responseData: PageMovies?
+        let expectation = XCTestExpectation(description: "process the request")
+        let task = listMovieAPIClient.requestPageMovies(page: 1, type: .Popular) { result in
             switch result {
             case .success(let movies):
                 responseData = movies
             case .failure(let error):
                 responseError = error
             }
+            expectation.fulfill()
         }
+        wait(for: [expectation], timeout: 1)
+        
         XCTAssertNotNil(task)
         XCTAssertNil(responseError)
         XCTAssertNotNil(responseData)
-        XCTAssertEqual(mockData, responseData)
+        XCTAssertEqual(mockDataPage, responseData)
     }
     
     func testPerformanceExample() {

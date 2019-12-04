@@ -10,24 +10,27 @@
 
 import Foundation
 
-final class MockListMoviesAPIClient: ListMoviesAPIClientApi {
+final class MockListMoviesAPIClient {
     
-    private var response: [Movie]?
+    private var response: PageMovies?
     private var error: Error?
     
-    init(response: [Movie]?, error: Error?) {
+    init(response: PageMovies?, error: Error?) {
         self.response = response
         self.error = error
     }
     
-    func requestListPopularMovies(page: Int, reponse: @escaping (Result<[Movie], Error>) -> Void) -> URLSessionDataTask? {
+}
+
+extension MockListMoviesAPIClient: ListMoviesAPIClientApi {
+    
+    func requestPageMovies(page: Int, type: ListMoviesType, handler: @escaping (Result<PageMovies, Error>) -> Void) -> URLSessionDataTask? {
         if let error = self.error {
-            reponse(.failure(error))
+            handler(.failure(error))
         }
         if let data = self.response {
-            reponse(.success(data))
+            handler(.success(data))
         }
-        
         return nil
     }
     

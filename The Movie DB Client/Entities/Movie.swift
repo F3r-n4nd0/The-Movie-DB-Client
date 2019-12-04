@@ -26,6 +26,6 @@ struct Movie: Equatable {
     
     public var voteCount: Int
     
-    public var voteAverage: Decimal
+    public var voteAverage: Float
 
 }

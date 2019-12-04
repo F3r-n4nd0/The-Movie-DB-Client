@@ -7,3 +7,8 @@
 //
 
 import Foundation
+
+enum ConnectionStatus {
+    case disconnect
+    case connect
+}

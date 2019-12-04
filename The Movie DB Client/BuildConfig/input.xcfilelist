@@ -13,3 +13,6 @@ $(SRCROOT)/Carthage/Build/iOS/RxCocoa.framework
 $(SRCROOT)/Carthage/Build/iOS/RxRelay.framework
 $(SRCROOT)/Carthage/Build/iOS/Kingfisher.framework
 $(SRCROOT)/Carthage/Build/iOS/ESPullToRefresh.framework
+$(SRCROOT)/Carthage/Build/iOS/AMScrollingNavbar.framework
+$(SRCROOT)/Carthage/Build/iOS/RealmSwift.framework
+$(SRCROOT)/Carthage/Build/iOS/Realm.framework
