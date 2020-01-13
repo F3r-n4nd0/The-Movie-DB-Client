@@ -3,3 +3,4 @@ github "onevcat/Kingfisher" ~> 5.0
 github "eggswift/pull-to-refresh"
 github "andreamazz/AMScrollingNavbar"
 github "realm/realm-cocoa"
+github "ferranabello/Viperit"
